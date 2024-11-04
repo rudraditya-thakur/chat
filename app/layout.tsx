@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ConvexClientProvider } from "./providers";
-
+import Footer from "@/components/Footer";
+import Navbar from "@/components/NavBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,9 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
+        <Navbar />
         <ConvexClientProvider>
           {children}
         </ConvexClientProvider>
+        <Footer />
       </body>
     </html>
   );
