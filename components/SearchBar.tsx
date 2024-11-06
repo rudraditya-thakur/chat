@@ -12,18 +12,7 @@ const SearchBar = () => {
     const query = formData.get("name") as string;
 
     if (query) {
-      router.push(`/products?query=${query}`);
-
-      // Log the search query to the API
-      try {
-        await fetch("/api/logSearchQuery", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query }),
-        });
-      } catch (error) {
-        console.error("Error logging search query:", error);
-      }
+      router.push(`/products?query=${query}`)
 
       // Store query in local storage
       const existingQueries = JSON.parse(localStorage.getItem("searchQueries") || "[]");

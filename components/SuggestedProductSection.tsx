@@ -21,7 +21,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
             <p className="text-gray-700 mt-1">Price: ${product.price.toFixed(2)}</p>
             <p className="text-yellow-500 mt-1">Rating: {product.rating} ★</p>
             <a
-                href={product.landingPageUrl}
+                href={`https://myntra.com/${product.landingPageUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 underline mt-2 inline-block"
@@ -45,7 +45,7 @@ const SuggestedProductSection: FC<SuggestedProductSectionProps> = ({ products })
         if (products && searchQueries.length > 0) {
             const recommendations = products
                 .map((product) => {
-                    const relevanceScore = searchQueries.reduce((score, query) => {
+                    const relevanceScore = searchQueries.reduce((score: number, query: string) => {
                         const matchCount = (product.productName.toLowerCase().match(new RegExp(query.toLowerCase(), 'g')) || []).length;
                         return score + matchCount;
                     }, 0);
@@ -64,6 +64,7 @@ const SuggestedProductSection: FC<SuggestedProductSectionProps> = ({ products })
 
     return (
         <section className="container mx-auto px-4 py-8">
+            <h1 className="font-bold text-3xl mb-2">Suggested for you</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {recommendedProducts.map((product) => (
                     <ProductCard key={product._id} product={product} />

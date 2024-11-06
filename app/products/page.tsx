@@ -1,13 +1,12 @@
 "use client";
 
-import { useQuery } from "convex/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import nlp from "compromise";
-import { api } from "@/convex/_generated/api";
+import { products } from "@/data/products";
 
 interface Product {
-    _id: string;
+    _id: number;
     productName: string;
     price: number;
     rating: number;
@@ -78,7 +77,7 @@ const STOP_PHRASES = [
 ];
 
 const ProductsPage = () => {
-    const productsDB = useQuery(api.products.get);
+    const productsDB = products;
     const searchParams = useSearchParams();
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [sortOption, setSortOption] = useState<string>('default'); // State for sorting option
@@ -150,17 +149,17 @@ const ProductsPage = () => {
         const doc = nlp(query);
         const terms = new Set<string>();
 
-        doc.nouns().out('array').forEach(term => {
+        doc.nouns().out('array').forEach((term: string) => {
             if (term.length > 2) {
                 terms.add(term.toLowerCase());
             }
         });
-        doc.adjectives().out('array').forEach(term => {
+        doc.adjectives().out('array').forEach((term: string) => {
             if (term.length > 2) {
                 terms.add(term.toLowerCase());
             }
         });
-        doc.verbs().out('array').forEach(term => {
+        doc.verbs().out('array').forEach((term: string) => {
             if (term.length > 2) {
                 terms.add(term.toLowerCase());
             }
@@ -215,7 +214,7 @@ const ProductsPage = () => {
                 })
                 .map(({ product }) => product);
 
-            const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.score), 70);
+            const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.rating), 70);
             const finalFilteredProducts = resultIndices.map(index => filteredAndSortedProducts[index]);
 
             if (finalFilteredProducts.length > 0) {
@@ -246,7 +245,7 @@ const ProductsPage = () => {
         const option = event.target.value;
         setSortOption(option);
 
-        let sortedProducts = [...filteredProducts];
+        const sortedProducts = [...filteredProducts];
 
         if (option === 'low-to-high') {
             sortedProducts.sort((a, b) => a.price - b.price);
@@ -269,7 +268,7 @@ const ProductsPage = () => {
         <div className="p-4">
             {searchParams.get("query") && (
                 <p className="text-gray-600 mb-4">
-                    Found {filteredProducts.length} results for "{searchParams.get("query")}"
+                    Found {filteredProducts.length} results for &quot;{searchParams.get("query")}&quot;
                 </p>
             )}
 
@@ -303,7 +302,7 @@ const ProductsPage = () => {
                             </div>
                             <h3 className="text-lg font-semibold mt-2">{product.productName}</h3>
                             <p className="text-gray-600">Price: ${product.price.toFixed(2)}</p>
-                            <a href={product.landingPageUrl} className="text-blue-500">View Product</a>
+                            <a href={`https://myntra.com/${product.landingPageUrl}`} className="text-blue-500">View Product</a>
                         </div>
                     ))}
                 </div>
@@ -314,4 +313,18 @@ const ProductsPage = () => {
     );
 };
 
-export default ProductsPage;
+function Products() {
+    return (
+        <div>
+            <Suspense fallback={
+                <div className="p-4 text-center">
+                    <p className="text-gray-600">Loading products...</p>
+                </div>
+            }>
+                <ProductsPage />
+            </Suspense>
+        </div>
+    )
+}
+
+export default Products;
