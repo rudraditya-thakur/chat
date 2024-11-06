@@ -6,14 +6,29 @@ import { useRouter } from "next/navigation";
 const SearchBar = () => {
   const router = useRouter();
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const query = formData.get("name") as string;
 
-    // Redirect to the product list page with the search query as a query parameter
     if (query) {
       router.push(`/products?query=${query}`);
+
+      // Log the search query to the API
+      try {
+        await fetch("/api/logSearchQuery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query }),
+        });
+      } catch (error) {
+        console.error("Error logging search query:", error);
+      }
+
+      // Store query in local storage
+      const existingQueries = JSON.parse(localStorage.getItem("searchQueries") || "[]");
+      existingQueries.push(query);
+      localStorage.setItem("searchQueries", JSON.stringify(existingQueries));
     }
   };
 
