@@ -16,7 +16,7 @@ interface Product {
     landingPageUrl: string;
 }
 
-const MIN_SIMILARITY_THRESHOLD = 0.3; // Define the threshold for relevance
+const MIN_SIMILARITY_THRESHOLD = 0.3;
 const STOP_PHRASES = [
     "give me", "show me", "i want", "can you find", "please find", "find me", "i need",
     "search for", "i am looking for", "get me", "i would like", "could you find", "help me find",
@@ -24,8 +24,59 @@ const STOP_PHRASES = [
     "looking for", "can i get", "is there", "is it possible to find", "could you show", "find",
     "search", "i’m trying to find", "may i have", "can you locate", "where do i find",
     "any chance of finding", "could i see", "please help me find", "i am searching for",
-    "i wish to find", "show", "locate", "do you have any", "do you offer"
+    "i wish to find", "show", "locate", "do you have any", "do you offer",
+    "can you suggest", "is there any way to find", "how do i locate", "i am hoping to find",
+    "would like to see", "can you help me with", "i would love to see", "bring me",
+    "can i view", "suggest me", "point me to", "i’d be interested in", "anything available for",
+    "direct me to", "would be nice to have", "is it possible to locate", "i am hunting for",
+    "anything on", "do you happen to have", "got any", "i’m after", "wish to see",
+    "find out if", "is there a way to locate", "show me if you have", "does it include",
+    "is there a listing for", "please tell me", "any leads on", "i could use",
+    "anything related to", "i want to see", "can you spot", "what can you show",
+    "can you assist with finding", "bring up", "any information on", "let’s find",
+    "i would enjoy seeing", "do you know where", "is it possible you have", "look for",
+    "assist me with finding", "please list", "i was wondering if", "if there’s any",
+    "find any", "pull up", "open up", "i’m looking to find", "help with finding",
+    "discover", "i could find", "what do you have on", "where can i see",
+    "can you display", "i’m curious about", "is there anything on", "please locate",
+    "showcase", "if you can find", "i’ll need", "do you mind showing",
+    "i would need", "give info on", "i’ll look for", "is there a resource for",
+    "is it listed", "show details", "fetch", "i’ll be interested in",
+    "i was thinking of finding", "anything specific for", "give an overview of",
+    "is it available", "may i see", "provide options", "gather info on",
+    "provide results for", "give recommendations for", "i was wondering if you have",
+    "show products", "show options for", "highlight", "i’ll search",
+    "retrieve", "show availability for", "suggest items for", "recommend",
+    "do a search for", "research", "i’m interested to see", "offer me",
+    "fetch details for", "i was thinking of checking", "see if you can locate",
+    "fetch me", "let me check if there’s", "look up", "explore options for",
+    "bring results for", "suggest for me", "show possibilities for", "advise on",
+    "browse for", "guide me to", "pull options for", "find listings for",
+    "can you retrieve", "access info on", "i wonder if there’s", "assist with",
+    "can you gather", "display possibilities for", "can i browse", "would you bring",
+    "where can one find", "display results for", "where might i find", "open",
+    "list items for", "do you have listings for", "supply info on", "recommendations",
+    "do you know about", "list options", "search me", "show me suggestions for",
+    "help in finding", "provide details", "i’ll take a look at", "produce results for",
+    "do you happen to know", "can you look into", "i was hoping to see", "might there be",
+    "any info on", "examine", "assist in locating", "provide help with",
+    "explore items for", "check out", "i am interested to check", "curious to know about",
+    "curious if there’s", "list all options", "investigate if there’s", "would like a list of",
+    "locate items for", "uncover", "find examples of", "can you find options for",
+    "is there a directory of", "search and show", "list products", "any listing on",
+    "review options for", "display choices for", "where do i search for",
+    "are there choices for", "what’s listed for", "any recommendations on", "do you know if",
+    "point towards", "give some options", "could you check for", "where would i find",
+    "display related", "open listings for", "explore details", "can you find listings for",
+    "is there an index of", "give me choices on", "would love to see if",
+    "list recommendations", "can i see options for", "reveal", "explore for",
+    "look into finding", "provide suggestions", "display relevant", "identify options for",
+    "track down", "any information you have on", "trace", "i’d like details on",
+    "give insight on", "do you have an inventory of", "what do you know about",
+    "are there recommendations on", "navigate to options for", "do you hold information on",
+    "expand on", "compile details for", "evaluate options", "is there insight on"
 ];
+
 
 
 const ProductsPage = () => {
