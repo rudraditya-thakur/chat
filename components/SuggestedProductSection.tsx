@@ -1,14 +1,14 @@
 import { FC, useEffect, useState } from 'react';
 
 interface Product {
-    _id: string;
+    _id: number;
     productName: string;
-    rating: number;
-    searchImage: string;
     price: number;
+    rating: number;
+    ratingCount: number;
+    searchImage: string;
     landingPageUrl: string;
 }
-
 interface ProductCardProps {
     product: Product;
 }
