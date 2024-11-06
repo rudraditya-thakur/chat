@@ -77,8 +77,6 @@ const STOP_PHRASES = [
     "expand on", "compile details for", "evaluate options", "is there insight on"
 ];
 
-
-
 const ProductsPage = () => {
     const productsDB = useQuery(api.products.get);
     const searchParams = useSearchParams();
@@ -220,11 +218,27 @@ const ProductsPage = () => {
             const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.score), 70);
             const finalFilteredProducts = resultIndices.map(index => filteredAndSortedProducts[index]);
 
-            setFilteredProducts(finalFilteredProducts);
+            if (finalFilteredProducts.length > 0) {
+                setFilteredProducts(finalFilteredProducts);
+            } else {
+                const randomBlanket = productsDB.find(product => product.productName.toLowerCase().includes("blanket"));
+                if (randomBlanket) {
+                    setFilteredProducts([randomBlanket]);
+                } else {
+                    setFilteredProducts(productsDB || []);
+                }
+            }
 
         } catch (error) {
             console.error('Error processing search:', error);
-            setFilteredProducts(productsDB || []);
+
+            // Show a random blanket when no products match
+            const randomBlanket = productsDB.find(product => product.productName.toLowerCase().includes("blanket"));
+            if (randomBlanket) {
+                setFilteredProducts([randomBlanket]);
+            } else {
+                setFilteredProducts(productsDB || []);
+            }
         }
     }, [searchParams, productsDB, extractKeywords]);
 
@@ -288,23 +302,13 @@ const ProductsPage = () => {
                                 />
                             </div>
                             <h3 className="text-lg font-semibold mt-2">{product.productName}</h3>
-                            <p className="text-gray-500">${product.price.toFixed(2)}</p>
-                            <p className="text-gray-500">{product.rating} ⭐ ({product.ratingCount} ratings)</p>
-                            <a
-                                href={`https://myntra.com/${product.landingPageUrl}`}
-                                className="text-blue-500 hover:underline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                View Product
-                            </a>
+                            <p className="text-gray-600">Price: ${product.price.toFixed(2)}</p>
+                            <a href={product.landingPageUrl} className="text-blue-500">View Product</a>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="text-center">
-                    <p className="text-gray-600">No results found.</p>
-                </div>
+                <p className="text-gray-600 text-center">No products found. Please try another search.</p>
             )}
         </div>
     );
