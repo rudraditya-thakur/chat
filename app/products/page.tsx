@@ -182,12 +182,12 @@ const ProductsPage = () => {
     useEffect(() => {
         const rawQuery = searchParams.get("query");
         const query = rawQuery ? cleanQuery(rawQuery) : "";
-
+    
         if (!query || !productsDB?.length) {
             setFilteredProducts(productsDB || []);
             return;
         }
-
+    
         try {
             const documents = [query, ...productsDB.map(p => p.productName)];
             const { tfIdfVectors, terms } = createTfIdfIndex(documents);
@@ -196,9 +196,9 @@ const ProductsPage = () => {
                 product,
                 score: cosineSimilarity(queryVector, tfIdfVectors[index + 1], terms)
             }));
-
+    
             const keywords = extractKeywords(query);
-
+    
             const filteredAndSortedProducts = similarities
                 .filter(({ score }) => score >= MIN_SIMILARITY_THRESHOLD)
                 .map(({ product, score }) => ({
@@ -215,33 +215,20 @@ const ProductsPage = () => {
                     return b.score - a.score;
                 })
                 .map(({ product }) => product);
-
-            const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.rating), 70);
+    
+            const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.score), 70);
             const finalFilteredProducts = resultIndices.map(index => filteredAndSortedProducts[index]);
-
-            if (finalFilteredProducts.length > 0) {
-                setFilteredProducts(finalFilteredProducts);
-            } else {
-                const randomBlanket = productsDB.find(product => product.productName.toLowerCase().includes("blanket"));
-                if (randomBlanket) {
-                    setFilteredProducts([randomBlanket]);
-                } else {
-                    setFilteredProducts(productsDB || []);
-                }
-            }
-
+    
+            setFilteredProducts(finalFilteredProducts.length > 0 ? finalFilteredProducts : productsDB || []);
+    
         } catch (error) {
             console.error('Error processing search:', error);
-
-            // Show a random blanket when no products match
+            
             const randomBlanket = productsDB.find(product => product.productName.toLowerCase().includes("blanket"));
-            if (randomBlanket) {
-                setFilteredProducts([randomBlanket]);
-            } else {
-                setFilteredProducts(productsDB || []);
-            }
+            setFilteredProducts(randomBlanket ? [randomBlanket] : productsDB || []);
         }
     }, [searchParams, productsDB, extractKeywords]);
+    
 
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const option = event.target.value;
