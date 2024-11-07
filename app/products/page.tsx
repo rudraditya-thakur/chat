@@ -1,9 +1,11 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo, Suspense } from "react";
 import nlp from "compromise";
-import { products } from "@/data/products";
+
 
 interface Product {
     _id: number;
@@ -77,7 +79,7 @@ const STOP_PHRASES = [
 ];
 
 const ProductsPage = () => {
-    const productsDB = products;
+    const productsDB = useQuery(api.products.get);
     const searchParams = useSearchParams();
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [sortOption, setSortOption] = useState<string>('default'); // State for sorting option
