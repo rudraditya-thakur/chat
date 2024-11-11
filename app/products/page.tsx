@@ -1,9 +1,8 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { products } from "@/data/products";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo, Suspense } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import nlp from "compromise";
 
 
@@ -79,7 +78,7 @@ const STOP_PHRASES = [
 ];
 
 const ProductsPage = () => {
-    const productsDB = useQuery(api.products.get);
+    const productsDB = products;
     const searchParams = useSearchParams();
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [sortOption, setSortOption] = useState<string>('default'); // State for sorting option
@@ -182,12 +181,12 @@ const ProductsPage = () => {
     useEffect(() => {
         const rawQuery = searchParams.get("query");
         const query = rawQuery ? cleanQuery(rawQuery) : "";
-    
+
         if (!query || !productsDB?.length) {
             setFilteredProducts(productsDB || []);
             return;
         }
-    
+
         try {
             const documents = [query, ...productsDB.map(p => p.productName)];
             const { tfIdfVectors, terms } = createTfIdfIndex(documents);
@@ -196,9 +195,9 @@ const ProductsPage = () => {
                 product,
                 score: cosineSimilarity(queryVector, tfIdfVectors[index + 1], terms)
             }));
-    
+
             const keywords = extractKeywords(query);
-    
+
             const filteredAndSortedProducts = similarities
                 .filter(({ score }) => score >= MIN_SIMILARITY_THRESHOLD)
                 .map(({ product, score }) => ({
@@ -215,20 +214,20 @@ const ProductsPage = () => {
                     return b.score - a.score;
                 })
                 .map(({ product }) => product);
-    
+
             const resultIndices = applyPageRank(filteredAndSortedProducts.map(p => p.score), 70);
             const finalFilteredProducts = resultIndices.map(index => filteredAndSortedProducts[index]);
-    
+
             setFilteredProducts(finalFilteredProducts.length > 0 ? finalFilteredProducts : productsDB || []);
-    
+
         } catch (error) {
             console.error('Error processing search:', error);
-            
+
             const randomBlanket = productsDB.find(product => product.productName.toLowerCase().includes("blanket"));
             setFilteredProducts(randomBlanket ? [randomBlanket] : productsDB || []);
         }
     }, [searchParams, productsDB, extractKeywords]);
-    
+
 
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const option = event.target.value;
@@ -291,7 +290,7 @@ const ProductsPage = () => {
                             </div>
                             <h3 className="text-lg font-semibold mt-2">{product.productName}</h3>
                             <p className="text-gray-600">Price: ${product.price.toFixed(2)}</p>
-                            <a href={`https://myntra.com/${product.landingPageUrl}`} className="text-blue-500">View Product</a>
+                            <a href={`/products/${product._id}`} className="text-blue-500">View Product</a>
                         </div>
                     ))}
                 </div>
